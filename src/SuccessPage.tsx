@@ -1,9 +1,6 @@
 import React from 'react';
 import { Download, CheckCircle2 } from 'lucide-react';
 
-// A PaySuite so redireciona para return_url apos pagamento confirmado.
-// Nao e necessario verificar novamente — a presenca de ?ref= ja e a confirmacao.
-
 const PDF_FILE = '/Manual_Para_Sobreviver_24_Dias_na_Cadeia.pdf';
 
 const SuccessPage: React.FC = () => {
@@ -34,7 +31,6 @@ const SuccessPage: React.FC = () => {
               Referencia: <code>{reference}</code>
             </div>
           )}
-
           <button
             id="btn-download"
             className="btn-primary download-btn"
@@ -42,7 +38,6 @@ const SuccessPage: React.FC = () => {
           >
             <Download size={20} /> Descarregar PDF
           </button>
-
           <p className="download-note">
             Guarda o ficheiro no teu dispositivo.{' '}
             <a href="/">Voltar a loja</a>
