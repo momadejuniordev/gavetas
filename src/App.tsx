@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BookOpen, CheckCircle2, PenTool, User, ArrowRight } from 'lucide-react';
 import PaymentModal from './PaymentModal';
+import SuccessPage from './SuccessPage';
 import './App.css';
 
 interface Book {
@@ -18,7 +19,7 @@ const books: Book[] = [
   {
     id: 'manual-cadeia',
     title: 'Manual Para Sobreviver 24 Dias na Cadeia',
-    price: 159,
+    price: 109,
     coverTextTop: 'MANUAL\nPARA\nSOBREVIVER',
     coverTextMiddle: '24 DIAS',
     coverTextBottom: 'NA CADEIA\n\nESCRITO POR:\nMOMADE JÚNIOR',
@@ -29,6 +30,12 @@ const books: Book[] = [
 
 function App() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+
+  // Se o URL contém ?ref=, mostrar a página de sucesso/download
+  const paymentRef = new URLSearchParams(window.location.search).get('ref');
+  if (paymentRef) {
+    return <SuccessPage />;
+  }
 
   return (
     <div className="app">
@@ -73,7 +80,7 @@ function App() {
             <h2 className="section-title">A Coleção</h2>
             <p className="section-subtitle">Obras disponíveis exclusivamente neste arquivo digital.</p>
           </div>
-          
+
           <div className="books-grid">
             {books.map(book => (
               <div key={book.id} className="book-card-container">
@@ -172,6 +179,7 @@ function App() {
           isOpen={true}
           onClose={() => setSelectedBook(null)}
           bookTitle={selectedBook.title}
+          bookId={selectedBook.id}
           price={selectedBook.price}
         />
       )}

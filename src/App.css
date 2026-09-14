@@ -465,3 +465,103 @@ body {
     text-align: center;
   }
 }
+
+/* ========================================
+   SUCCESS / DOWNLOAD PAGE
+   ======================================== */
+
+.success-page {
+  min-height: 100vh;
+  background: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.success-container {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+}
+
+.success-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.success-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #c0392b;
+}
+.success-error h2 { font-size: 1.4rem; color: var(--text-main); }
+.success-error p { color: var(--text-muted); }
+
+.success-paid, .success-pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.success-icon-wrapper {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 2px solid #22c55e;
+  display: flex; align-items: center; justify-content: center;
+}
+.success-icon { color: #22c55e; }
+
+.pending-icon-wrapper {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
+  display: flex; align-items: center; justify-content: center;
+}
+.pending-icon { color: #f59e0b; }
+
+.success-paid h1, .success-pending h1 {
+  font-size: 1.8rem; font-weight: 800; margin: 0;
+}
+
+.success-subtitle {
+  color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin: 0;
+}
+
+.success-ref {
+  font-size: 0.85rem; color: var(--text-muted);
+  background: var(--bg-color); border: 1px solid var(--border);
+  border-radius: 0.5rem; padding: 0.5rem 1rem;
+}
+.success-ref code { font-family: monospace; font-weight: 600; color: var(--text-main); }
+
+.download-btn {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 1rem; padding: 0.9rem 2rem;
+  border-radius: 0.75rem; width: 100%; justify-content: center;
+}
+
+.download-note { font-size: 0.82rem; color: var(--text-muted); }
+.download-note a { color: var(--text-main); font-weight: 600; }
+
+.pending-note { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+.animate-spin { animation: spin 1s linear infinite; }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

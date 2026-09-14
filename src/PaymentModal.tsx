@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import { supabase } from './lib/supabaseClient';
 import './PaymentModal.css';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   bookTitle: string;
+  bookId: string;
   price: number;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle, price }) => {
+const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle, bookId, price }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -32,8 +34,25 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle,
 
     try {
       const chave = '2497|uaFzvldEYZWRXExkJ5wzzEwpcoW7x6gJkALhrxpiccf65ef6';
-      const url = "https://paysuite.tech/api/v1/payments";
+      const paysuiteUrl = "https://paysuite.tech/api/v1/payments";
+      const reference = `LIVRO${Date.now()}`;
 
+      // 1. Guardar a compra no Supabase com estado "pending"
+      const { error: dbError } = await supabase.from('purchases').insert({
+        reference,
+        book_id: bookId,
+        customer_email: formData.email,
+        customer_name: formData.name,
+        amount: price,
+        status: 'pending',
+      });
+
+      if (dbError) {
+        console.error('Erro ao guardar compra:', dbError);
+        // Continuamos mesmo assim para não bloquear o pagamento
+      }
+
+      // 2. Criar o pagamento na PaySuite
       const headers = {
         Authorization: `Bearer ${chave}`,
         "Content-Type": "application/json",
@@ -42,14 +61,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle,
 
       const body = {
         amount: price.toString(),
-        reference: `LIVRO${Date.now()}`,
+        reference,
         description: `Pagamento para ${bookTitle}`,
-        return_url: window.location.origin,
-        webhook_url: "https://example.com/webhook",
-        contact_id: ""
+        return_url: `${window.location.origin}?ref=${reference}`,
+        customer: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+        }
       };
 
-      const response = await fetch(url, {
+      const response = await fetch(paysuiteUrl, {
         method: "POST",
         headers,
         body: JSON.stringify(body),
