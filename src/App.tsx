@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BookOpen, CheckCircle2, PenTool, Mail, User, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, CheckCircle2, PenTool, User, ArrowRight } from 'lucide-react';
 import PaymentModal from './PaymentModal';
 import './App.css';
 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { supabase } from './lib/supabaseClient';
 import './PaymentModal.css';
 
 interface PaymentModalProps {
