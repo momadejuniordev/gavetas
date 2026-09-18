@@ -19,7 +19,7 @@ const books: Book[] = [
   {
     id: 'manual-cadeia',
     title: 'Manual Para Sobreviver 24 Dias na Cadeia',
-    price: 109,
+    price: 59,
     coverTextTop: 'MANUAL\nPARA\nSOBREVIVER',
     coverTextMiddle: '24 DIAS',
     coverTextBottom: 'NA CADEIA\n\nESCRITO POR:\nMOMADE JÚNIOR',
