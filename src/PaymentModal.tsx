@@ -33,9 +33,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle,
     setError('');
 
     try {
-      const chave = '2497|uaFzvldEYZWRXExkJ5wzzEwpcoW7x6gJkALhrxpiccf65ef6';
-      const paysuiteUrl = "https://paysuite.tech/api/v1/payments";
       const reference = `LIVRO${Date.now()}`;
+      const returnUrl = `${window.location.origin}${window.location.pathname}?ref=${reference}`;
 
       // 1. Guardar a compra no Supabase com estado "pending"
       const { error: dbError } = await supabase.from('purchases').insert({
@@ -52,37 +51,42 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, bookTitle,
         // Continuamos mesmo assim para não bloquear o pagamento
       }
 
-      // 2. Criar o pagamento na PaySuite
-      const headers = {
-        Authorization: `Bearer ${chave}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      };
-
-      const body = {
-        amount: price.toString(),
-        reference,
-        description: `Pagamento para ${bookTitle}`,
-        return_url: `${window.location.origin}?ref=${reference}`,
-        customer: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-        }
-      };
-
-      const response = await fetch(paysuiteUrl, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
+      // 2. Criar o pagamento na PaySuite através da Edge Function
+      // (a chave secreta da PaySuite fica apenas no servidor)
+      const { data, error } = await supabase.functions.invoke('createPayment', {
+        body: {
+          amount: price,
+          reference,
+          description: `Pagamento para ${bookTitle}`,
+          return_url: returnUrl,
+          customer: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+          },
+        },
       });
 
-      const data = await response.json();
+      if (error) {
+        let message = error.message || 'Ocorreu um erro ao processar o pagamento.';
+        try {
+          const ctx = (error as { context?: Response }).context;
+          if (ctx) {
+            const parsed = await ctx.json();
+            if (parsed?.error || parsed?.message) message = parsed.error || parsed.message;
+          }
+        } catch {
+          // mantém a mensagem original
+        }
+        throw new Error(message);
+      }
 
-      if (response.ok && data?.data?.checkout_url) {
+      // A função devolve a resposta da PaySuite: { status: "success", data: { checkout_url } }
+      if (data?.status === 'success' && data?.data?.checkout_url) {
         window.location.href = data.data.checkout_url;
       } else {
-        setError(data?.message || 'Ocorreu um erro ao processar o pagamento.');
+        const msg = data?.message || data?.error || 'Ocorreu um erro ao processar o pagamento.';
+        setError(msg);
         console.error("Erro PaySuite:", data);
       }
     } catch (err: any) {
